@@ -1,17 +1,46 @@
 package lyc.com.dragstylecodestandard;
 
+import android.app.Activity;
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+
+import java.util.ArrayList;
+
+import lyc.com.dragstylecodestandard.view.DragableLisvtView;
 
 
 public class MainActivity extends ActionBarActivity {
+    private Context ctx;
+    private Activity act;
+    private DragableLisvtView  lv;
+    ArrayAdapter adapter;
+    private ArrayList<String> strs=new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ctx=getApplicationContext();
+        act=this;
+        initView();
+        initData();
+        adapter =new ArrayAdapter(ctx,android.R.layout.simple_expandable_list_item_1,strs);
+        lv.setAdapter(adapter);
+    }
+
+    private void initData() {
+        for (int i=0;i<10;i++){
+            strs.add("data"+i);
+        }
+    }
+
+    private void initView() {
+        lv= (DragableLisvtView) findViewById(R.id.lv);
+
     }
 
     @Override
