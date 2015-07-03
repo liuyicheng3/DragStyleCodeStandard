@@ -6,10 +6,15 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import lyc.com.dragstylecodestandard.view.CustomAdapter;
 import lyc.com.dragstylecodestandard.view.DragableLisvtView;
 
 
@@ -17,7 +22,7 @@ public class MainActivity extends ActionBarActivity {
     private Context ctx;
     private Activity act;
     private DragableLisvtView  lv;
-    ArrayAdapter adapter;
+    CustomAdapter adapter;
     private ArrayList<String> strs=new ArrayList<String>();
 
     @Override
@@ -28,7 +33,7 @@ public class MainActivity extends ActionBarActivity {
         act=this;
         initView();
         initData();
-        adapter =new ArrayAdapter(ctx,android.R.layout.simple_expandable_list_item_1,strs);
+        adapter =new CustomAdapter(strs,act);
         lv.setAdapter(adapter);
     }
 
@@ -64,4 +69,6 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }

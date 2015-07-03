@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 /**
@@ -57,11 +58,13 @@ public class DragableLisvtView extends ListView {
     private ImageView dragIv;
     private int downRawX;
     private int downRawY;
-    private boolean isViewOnDrag=false;
+    private boolean isViewOnDrag = false;
+    private View currentItem;
     private OnItemLongClickListener longClick = new OnItemLongClickListener() {
         @Override
         public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
             prePosition = i;
+            currentItem=view;
 
             view.destroyDrawingCache();
             view.setDrawingCacheEnabled(true);
@@ -84,12 +87,13 @@ public class DragableLisvtView extends ListView {
                 dragIv.setTag(DRAG_IMG_NOT_SHOW);
             }
             dragIv.setImageBitmap(bitmap);
-            isViewOnDrag=true;
+            isViewOnDrag = true;
 
             windowManager.addView(dragIv, lps);
             dragIv.setLayoutParams(lps);
-            Log.e("lyc","iv width height"+dragIv.getLayoutParams().width+"  "+dragIv.getLayoutParams().height);
+            Log.e("lyc", "iv width height" + dragIv.getLayoutParams().width + "  " + dragIv.getLayoutParams().height);
             dragIv.setTag(DRAG_IMG_SHOW);
+            view.setVisibility(INVISIBLE);
 //            ((GridViewAdapter)getAdapter()).h
 
 
@@ -100,25 +104,30 @@ public class DragableLisvtView extends ListView {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        if (ev.getAction()==MotionEvent.ACTION_DOWN){
-            downRawX= (int) ev.getRawX();
-            downRawY= (int) ev.getRawY();
-        }else if((ev.getAction()==MotionEvent.ACTION_MOVE)&&isViewOnDrag){
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            downRawX = (int) ev.getRawX();
+            downRawY = (int) ev.getRawY();
+        } else if ((ev.getAction() == MotionEvent.ACTION_MOVE) && isViewOnDrag) {
             Log.e("lyc", "event" + ev.getRawX() + " " + ev.getRawY());
-            //设置触摸点为dragImageView中心
-            lps.x = (int)(ev.getRawX() - dragIv.getWidth()/2);
-            lps.y = (int)(ev.getRawY() - dragIv.getHeight()/2);
+            lps.x = (int) (ev.getRawX() - dragIv.getWidth() / 2);
+            lps.y = (int) (ev.getRawY() - dragIv.getHeight() / 2);
 
             windowManager.updateViewLayout(dragIv, lps);
             Log.e("lyc", "move iv" + String.valueOf(dragIv.getX()));
 
-            int currDragPosition=pointToPosition((int)ev.getX(),(int)ev.getY());
 
-            if((currDragPosition!=AdapterView.INVALID_POSITION)&&(currDragPosition!=prePosition)){
-//                ((ListAdapter)getAdapter()).
+        } else if ((ev.getAction() == MotionEvent.ACTION_UP) && isViewOnDrag) {
+            currentItem.setVisibility(VISIBLE);
+            if ((int)(dragIv.getTag()) == DRAG_IMG_SHOW) {
+                windowManager.removeView(dragIv);
+                dragIv.setTag(DRAG_IMG_NOT_SHOW);
             }
+            int currDragPosition = pointToPosition((int) ev.getX(), (int) ev.getY());
 
-
+            if ((currDragPosition != AdapterView.INVALID_POSITION) && (currDragPosition != prePosition)) {
+                ((CustomAdapter)getAdapter()).swapItem(prePosition, currDragPosition);
+            }
+            isViewOnDrag = false;
         }
         return super.onTouchEvent(ev);
     }
